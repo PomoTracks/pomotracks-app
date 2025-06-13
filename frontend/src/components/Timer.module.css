@@ -27,4 +27,34 @@
 
 .controlButton:hover {
   background-color: #535bf2;
+}
+
+.controlPanel {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sessionButton {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #eee;
+  color: #333;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.sessionButton:hover {
+  background-color: #ddd;
+}
+
+.activeButton {
+  background-color: #007bff;
+  color: white;
+}
+
+.activeButton:hover {
+  background-color: #0056b3;
 } 
