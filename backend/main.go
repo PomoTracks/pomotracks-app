@@ -1,13 +1,18 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	// Create a new Gin router
 	router := gin.Default()
+
+	// Enable CORS
+	router.Use(cors.Default())
 
 	// Define API routes
 	api := router.Group("/api/v1")
@@ -22,4 +27,4 @@ func main() {
 
 	// Start the server on port 8080
 	router.Run(":8080")
-} 
+}
