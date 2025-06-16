@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Timer from './components/Timer'
+import { TopicManager } from './components/TopicManager'
 
 function App() {
   const [apiStatus, setApiStatus] = useState('connecting...')
@@ -17,9 +18,13 @@ function App() {
   }, [])
 
   return (
-    <div>
-      <p>API Status: {apiStatus}</p>
-      <Timer />
+    <div className="min-h-screen bg-gray-100">
+      <div className="container mx-auto py-8">
+        <h1 className="text-3xl font-bold text-center mb-8">PomoTracks</h1>
+        <p>API Status: {apiStatus}</p>
+        <Timer />
+        <TopicManager />
+      </div>
     </div>
   )
 }
