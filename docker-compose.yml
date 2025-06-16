@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: pomotracks-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: pomouser
+      MONGO_INITDB_ROOT_PASSWORD: pomopassword
+    ports:
+      - "27017:27017"
+    volumes:
+      - pomotracks_mongo_data:/data/db
+
+  api:
+    build: ./backend
+    container_name: pomotracks-api
+    depends_on:
+      - mongo
+    ports:
+      - "8080:8080"
+
+volumes:
+  pomotracks_mongo_data: 
