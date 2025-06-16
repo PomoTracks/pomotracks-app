@@ -1,4 +1,4 @@
-module github.com/PomoTracks/pomotracks-app/backend
+module pomotracks-app/backend
 
 go 1.22
 

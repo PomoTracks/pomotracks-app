@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"./storage"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"pomotracks-app/backend/storage"
 )
 
 var db *mongo.Database
@@ -20,7 +21,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://pomouser:pomopassword@mongo:27017"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,6 +50,7 @@ func main() {
 	r.GET("/api/v1/topics", func(c *gin.Context) {
 		topics, err := storage.GetTopics(db)
 		if err != nil {
+			log.Println("GetTopics error:", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -62,7 +64,9 @@ func main() {
 			return
 		}
 
-		if err := storage.CreateTopic(db, topic); err != nil {
+		_, err := storage.CreateTopic(db, topic)
+		if err != nil {
+			log.Println("CreateTopic error:", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
