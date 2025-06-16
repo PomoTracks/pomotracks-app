@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Timer from './components/Timer'
 import { TopicManager } from './components/TopicManager'
 import { Topic, getTopics, createTopic } from './services/api'
+import ProgressTracker from './components/ProgressTracker'
 import './App.css'
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
           onCreateTopic={handleCreateTopic}
           onRefreshTopics={fetchTopics}
         />
+        <ProgressTracker />
       </div>
     </div>
   )

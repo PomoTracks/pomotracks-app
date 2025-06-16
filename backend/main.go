@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -76,10 +77,24 @@ func main() {
 
 	// Sessions endpoint
 	r.POST("/api/v1/sessions", func(c *gin.Context) {
-		var session storage.Session
-		if err := c.ShouldBindJSON(&session); err != nil {
+		var payload struct {
+			TopicID         string `json:"topicId"`
+			DurationSeconds int    `json:"durationSeconds"`
+		}
+		if err := c.ShouldBindJSON(&payload); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
+		}
+
+		objectID, err := primitive.ObjectIDFromHex(payload.TopicID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid topicId"})
+			return
+		}
+
+		session := storage.Session{
+			TopicID:         objectID,
+			DurationSeconds: payload.DurationSeconds,
 		}
 
 		if err := storage.CreateSession(db, session); err != nil {
@@ -89,6 +104,20 @@ func main() {
 
 		c.JSON(http.StatusCreated, session)
 	})
+
+	// Handler for aggregated progress
+	getProgressHandler := func(c *gin.Context) {
+		results, err := storage.GetAggregatedProgress(db)
+		if err != nil {
+			log.Println("GetAggregatedProgress error:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, results)
+	}
+
+	// Progress endpoint
+	r.GET("/api/v1/progress", getProgressHandler)
 
 	// Start server
 	if err := r.Run(":8080"); err != nil {

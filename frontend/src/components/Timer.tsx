@@ -8,7 +8,7 @@ interface TimerProps {
 }
 
 export default function Timer({ topics, selectedTopicId }: TimerProps) {
-  const [timeLeft, setTimeLeft] = useState(25 * 60)
+  const [timeLeft, setTimeLeft] = useState(5)
   const [isRunning, setIsRunning] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -39,7 +39,7 @@ export default function Timer({ topics, selectedTopicId }: TimerProps) {
     if (!selectedTopicId) return
 
     try {
-      await createSession(selectedTopicId, 25 * 60)
+      await createSession(selectedTopicId, 5)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save session')
     }
@@ -51,7 +51,7 @@ export default function Timer({ topics, selectedTopicId }: TimerProps) {
 
   const resetTimer = () => {
     setIsRunning(false)
-    setTimeLeft(25 * 60)
+    setTimeLeft(5)
   }
 
   const formatTime = (seconds: number): string => {

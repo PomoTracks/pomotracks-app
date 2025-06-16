@@ -11,6 +11,11 @@ export interface Session {
     completedAt: string;
 }
 
+export interface ProgressData {
+    TopicName: string;
+    TotalMinutes: number;
+}
+
 const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 export async function getTopics(): Promise<Topic[]> {
@@ -50,5 +55,13 @@ export async function createSession(topicId: string, durationSeconds: number): P
         throw new Error('Failed to create session');
     }
     
+    return response.json();
+}
+
+export async function getProgressData(): Promise<ProgressData[]> {
+    const response = await fetch(`${API_BASE_URL}/progress`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch progress data');
+    }
     return response.json();
 } 
