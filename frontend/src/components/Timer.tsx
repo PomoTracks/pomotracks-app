@@ -1,46 +1,58 @@
 import { useState, useEffect } from 'react'
+import { Topic, createSession } from '../services/api'
 import styles from './Timer.module.css'
 
-const SESSION_DURATIONS = {
-  'Pomodoro': 25 * 60,
-  'Short Break': 5 * 60,
-  'Long Break': 15 * 60
-} as const
+interface TimerProps {
+  topics: Topic[]
+  selectedTopicId: string | null
+}
 
-type SessionType = keyof typeof SESSION_DURATIONS
+export default function Timer({ topics, selectedTopicId }: TimerProps) {
+  const [timeLeft, setTimeLeft] = useState(25 * 60)
+  const [isRunning, setIsRunning] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-function Timer() {
-  const [timeLeft, setTimeLeft] = useState(SESSION_DURATIONS['Pomodoro'])
-  const [isActive, setIsActive] = useState(false)
-  const [sessionType, setSessionType] = useState<SessionType>('Pomodoro')
-
-  const toggleTimer = () => {
-    setIsActive(prev => !prev)
-  }
-
-  const changeSessionType = (newType: SessionType) => {
-    setIsActive(false)
-    setSessionType(newType)
-    setTimeLeft(SESSION_DURATIONS[newType])
-  }
+  const selectedTopic = topics.find(topic => topic.id === selectedTopicId)
 
   useEffect(() => {
-    let intervalId: number | undefined
+    let interval: number | undefined
 
-    if (isActive && timeLeft > 0) {
-      intervalId = window.setInterval(() => {
-        setTimeLeft(prev => prev - 1)
+    if (isRunning && timeLeft > 0) {
+      interval = window.setInterval(() => {
+        setTimeLeft((time) => time - 1)
       }, 1000)
     } else if (timeLeft === 0) {
-      setIsActive(false)
+      setIsRunning(false)
+      if (selectedTopicId) {
+        saveSession()
+      }
     }
 
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId)
+      if (interval) {
+        clearInterval(interval)
       }
     }
-  }, [isActive, timeLeft])
+  }, [isRunning, timeLeft, selectedTopicId])
+
+  const saveSession = async () => {
+    if (!selectedTopicId) return
+
+    try {
+      await createSession(selectedTopicId, 25 * 60)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save session')
+    }
+  }
+
+  const toggleTimer = () => {
+    setIsRunning(!isRunning)
+  }
+
+  const resetTimer = () => {
+    setIsRunning(false)
+    setTimeLeft(25 * 60)
+  }
 
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60)
@@ -49,29 +61,40 @@ function Timer() {
   }
 
   return (
-    <div>
-      <div className={styles.controlPanel}>
-        {(Object.keys(SESSION_DURATIONS) as SessionType[]).map((type) => (
-          <button
-            key={type}
-            className={`${styles.sessionButton} ${sessionType === type ? styles.activeButton : ''}`}
-            onClick={() => changeSessionType(type)}
-          >
-            {type}
-          </button>
-        ))}
+    <div className={styles.timerCard}>
+      {selectedTopic ? (
+        <div className={styles.topicDisplay} style={{marginBottom: '0.5rem'}}>
+          {selectedTopic.name}
+        </div>
+      ) : (
+        <div className={styles.topicDisplay} style={{marginBottom: '0.5rem'}}>
+          Please select a topic to start
+        </div>
+      )}
+
+      {error && (
+        <div className="text-red-500" style={{marginBottom: '1rem'}}>
+          {error}
+        </div>
+      )}
+
+      <div className={styles.timeDisplay} style={{marginBottom: '1.5rem'}}>
+        {formatTime(timeLeft)}
       </div>
-      <div className={styles.timerContainer}>
-        <div className={styles.timeDisplay}>{formatTime(timeLeft)}</div>
-        <button 
-          className={styles.controlButton} 
+
+      <div className={styles.controlButtons}>
+        <button
           onClick={toggleTimer}
+          disabled={!selectedTopic}
         >
-          {isActive ? 'PAUSE' : 'START'}
+          {isRunning ? 'Pause' : 'Start'}
+        </button>
+        <button
+          onClick={resetTimer}
+        >
+          Reset
         </button>
       </div>
     </div>
   )
-}
-
-export default Timer 
+} 

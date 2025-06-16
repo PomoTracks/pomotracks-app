@@ -1,0 +1,144 @@
+.topicManagerCard {
+  background-color: var(--card-background-color);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  padding: 2rem;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form input {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.form button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.form button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.listItem:hover {
+  border-color: var(--primary-color);
+}
+
+.listItem.active {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.listItem span:first-child {
+  font-weight: 500;
+}
+
+.listItem span:last-child {
+  font-size: 0.9rem;
+  color: var(--subtle-text-color);
+  background-color: var(--background-color);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.topicList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.topicItem {
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.topicItem:hover {
+  background-color: #f9fafb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.topicItem.active {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.topicName {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.topicType {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.button:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+} 

@@ -1,67 +1,93 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
+	"time"
 
-	"github.com/PomoTracks/pomotracks-app/backend/storage"
+	"./storage"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func createTopicHandler(c *gin.Context) {
-	var topic storage.Topic
-	if err := c.ShouldBindJSON(&topic); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	result, err := storage.CreateTopic(topic)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, result)
-}
-
-func listTopicsHandler(c *gin.Context) {
-	topics, err := storage.ListTopics()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, topics)
-}
+var db *mongo.Database
 
 func main() {
-	// Initialize database connection
-	if err := storage.Init(); err != nil {
-		log.Fatalf("Failed to initialize database: %v", err)
+	// Connect to MongoDB
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		log.Fatal(err)
 	}
+	defer client.Disconnect(ctx)
 
-	// Create a new Gin router
-	router := gin.Default()
+	db = client.Database("pomotracks")
 
-	// Enable CORS
-	router.Use(cors.Default())
+	// Create Gin router
+	r := gin.Default()
 
-	// Define API routes
-	api := router.Group("/api/v1")
-	{
-		// Health check endpoint
-		api.GET("/health", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"status": "ok",
-			})
+	// Configure CORS
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:5173"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Content-Type"}
+	r.Use(cors.New(config))
+
+	// Health check endpoint
+	r.GET("/api/v1/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "ok",
 		})
+	})
 
-		// Topic endpoints
-		api.POST("/topics", createTopicHandler)
-		api.GET("/topics", listTopicsHandler)
+	// Topics endpoints
+	r.GET("/api/v1/topics", func(c *gin.Context) {
+		topics, err := storage.GetTopics(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, topics)
+	})
+
+	r.POST("/api/v1/topics", func(c *gin.Context) {
+		var topic storage.Topic
+		if err := c.ShouldBindJSON(&topic); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if err := storage.CreateTopic(db, topic); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusCreated, topic)
+	})
+
+	// Sessions endpoint
+	r.POST("/api/v1/sessions", func(c *gin.Context) {
+		var session storage.Session
+		if err := c.ShouldBindJSON(&session); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if err := storage.CreateSession(db, session); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusCreated, session)
+	})
+
+	// Start server
+	if err := r.Run(":8080"); err != nil {
+		log.Fatal(err)
 	}
-
-	// Start the server on port 8080
-	router.Run(":8080")
 }
