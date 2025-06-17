@@ -1,0 +1,51 @@
+.settingsCard {
+  background-color: var(--card-background-color);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  padding: 2rem;
+  width: 500px;
+}
+
+.settingsForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.settingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.settingRow label {
+  font-weight: 500;
+  min-width: 200px;
+}
+
+.settingRow input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.saveButton {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  align-self: flex-end;
+}
+
+.saveButton:hover {
+  background-color: var(--primary-color-dark, #0056b3);
+  color: #fff;
+} 

@@ -12,18 +12,32 @@ export default function ProgressTracker() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getProgressData()
-      .then(res => setData(res ?? []))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+    const fetchProgress = async () => {
+      try {
+        const progressData = await getProgressData();
+        // Filter out any invalid entries
+        const validData = progressData.filter(
+          item => item.topicName && item.totalMinutes > 0
+        );
+        setData(validData);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch progress data');
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProgress();
   }, []);
 
   const chartData = {
-    labels: data.map(d => d.TopicName),
+    labels: data.map(d => d.topicName),
     datasets: [
       {
         label: 'Total Minutes',
-        data: data.map(d => d.TotalMinutes),
+        data: data.map(d => d.totalMinutes),
         backgroundColor: 'rgba(0, 123, 255, 0.7)',
       },
     ],
@@ -43,6 +57,9 @@ export default function ProgressTracker() {
       y: {
         beginAtZero: true,
         title: { display: true, text: 'Minutes' },
+        ticks: {
+          stepSize: 1
+        }
       },
       x: {
         title: { display: true, text: 'Topic' },
@@ -52,10 +69,12 @@ export default function ProgressTracker() {
 
   return (
     <div className={styles.progressCard}>
-      <h2 style={{marginBottom: '1rem'}}>Progress Tracker</h2>
-      {loading && <p>Loading...</p>}
-      {error && <p style={{color: 'red'}}>{error}</p>}
-      {!loading && !error && data.length === 0 && <p>No progress data yet.</p>}
+      <h2>Progress Tracker</h2>
+      {loading && <p>Loading progress data...</p>}
+      {error && <p className={styles.error}>{error}</p>}
+      {!loading && !error && data.length === 0 && (
+        <p className={styles.noData}>No progress data available yet. Complete some sessions to see your progress!</p>
+      )}
       {!loading && !error && data.length > 0 && (
         <Bar data={chartData} options={options} />
       )}

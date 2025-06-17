@@ -3,7 +3,7 @@
   border-radius: 12px;
   box-shadow: var(--card-shadow);
   padding: 2rem;
-  width: 350px;
+  width: 500px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,59 +11,84 @@
 }
 
 .topicDisplay {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
-.timeDisplay {
-  font-size: 5rem;
-  font-weight: 700;
+.time {
+  font-size: 4rem;
+  font-weight: bold;
+  font-family: monospace;
 }
 
-.controlButtons button {
-  margin: 0 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  background-color: var(--primary-color);
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.controlButtons button:hover {
-  background-color: #0056b3;
-}
-
-.controlPanel {
+.controls {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 1rem;
+}
+
+.controls button {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+  font-weight: 500;
+}
+
+.controls button:hover {
+  background-color: var(--primary-color-dark, #0056b3);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.completionMessage {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f0f4fa;
+  border-radius: 8px;
+  color: #222;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.completionMessage h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #222;
+}
+
+.completionMessage p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  opacity: 0.9;
+  color: #222;
+}
+
+.sessionButtons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1rem;
 }
 
 .sessionButton {
-  padding: 8px 16px;
+  background-color: var(--primary-color);
+  color: #fff;
   border: none;
   border-radius: 4px;
-  background-color: #eee;
-  color: #333;
-  cursor: pointer;
+  padding: 0.75rem 1.5rem;
   font-size: 1rem;
-  transition: all 0.2s ease;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+  font-weight: 500;
 }
 
 .sessionButton:hover {
-  background-color: #ddd;
-}
-
-.activeButton {
-  background-color: #007bff;
-  color: white;
-}
-
-.activeButton:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-color-dark, #0056b3);
+  color: #fff;
+  transform: translateY(-2px);
 } 

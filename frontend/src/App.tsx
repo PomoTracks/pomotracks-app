@@ -3,13 +3,22 @@ import Timer from './components/Timer'
 import { TopicManager } from './components/TopicManager'
 import { Topic, getTopics, createTopic } from './services/api'
 import ProgressTracker from './components/ProgressTracker'
+import Settings from './components/Settings'
 import './App.css'
+
+const SESSION_TYPES = ['Pomodoro', 'Short Break', 'Long Break'] as const
+type SessionType = typeof SESSION_TYPES[number]
 
 function App() {
   const [topics, setTopics] = useState<Topic[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null)
+  const [durations, setDurations] = useState<Record<SessionType, number>>({
+    'Pomodoro': 25,
+    'Short Break': 5,
+    'Long Break': 15
+  })
 
   const fetchTopics = async () => {
     try {
@@ -32,8 +41,8 @@ function App() {
     try {
       setIsLoading(true)
       setError(null)
-      await createTopic(name, type)
-      await fetchTopics()
+      const newTopic = await createTopic(name, type)
+      setTopics(prev => [...prev, newTopic])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create topic')
     } finally {
@@ -43,9 +52,11 @@ function App() {
 
   return (
     <div className="app">
-      <h1 className="app-header">PomoTracks</h1>
+      <header>
+        <h1>PomoTracks</h1>
+      </header>
       <div className="main-content">
-        <Timer topics={topics} selectedTopicId={selectedTopicId} />
+        <Timer topics={topics} selectedTopicId={selectedTopicId} durations={durations} />
         <TopicManager
           topics={topics}
           isLoading={isLoading}
@@ -56,6 +67,7 @@ function App() {
           onRefreshTopics={fetchTopics}
         />
         <ProgressTracker />
+        <Settings durations={durations} setDurations={setDurations} />
       </div>
     </div>
   )
