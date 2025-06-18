@@ -19,7 +19,6 @@ export function TopicManager({
   selectedTopicId,
   setSelectedTopicId,
   onCreateTopic,
-  onRefreshTopics,
 }: TopicManagerProps) {
   const [newTopicName, setNewTopicName] = useState('');
   const [newTopicType, setNewTopicType] = useState('');

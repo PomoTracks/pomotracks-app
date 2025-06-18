@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Topic, createSession } from '../services/api'
+import { createSession } from '../services/api'
 import styles from './Timer.module.css'
 
 const SESSION_TYPES = ['Pomodoro', 'Short Break', 'Long Break'] as const
